@@ -5,8 +5,10 @@
 
 typedef enum {
     NODE_NUMBER,
+    NODE_STRING,
     NODE_ADD,
-    NODE_PRINT
+    NODE_PRINT,
+    NODE_PROGRAM
 } NodeType;
 
 typedef struct Node {

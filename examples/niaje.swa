@@ -1,0 +1,5 @@
+
+andika("Hello, world!");
+andika('Hello again!');
+
+andika("mimi" + 59 + 4);

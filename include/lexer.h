@@ -4,6 +4,7 @@
 typedef enum {
     TOKEN_PRINT,
     TOKEN_NUMBER,
+    TOKEN_STRING,
     TOKEN_PLUS,
     TOKEN_LPAREN,
     TOKEN_RPAREN,

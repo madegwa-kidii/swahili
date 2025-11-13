@@ -19,10 +19,30 @@ Token *tokenize(const char *src, int *count) {
             continue;
         }
 
-        if (strncmp(&src[pos], "chapisha", 8) == 0) {
-            tokens[i++] = (Token){TOKEN_PRINT, strdup("chapisha")};
-            pos += 8; continue;
+        if (strncmp(&src[pos], "andika", 6) == 0) {
+            tokens[i++] = (Token){TOKEN_PRINT, strdup("andika")};
+            pos += 6; continue;
         }
+
+        if (src[pos] == '"' || src[pos] == '\'') {
+            char quote = src[pos++];
+            char buf[256];
+            int j = 0;
+
+            while (src[pos] != quote) {
+                if (src[pos] == '\0') {
+                    printf("Kimeumana: Unterminated string\n");
+                    exit(1);
+                }
+                buf[j++] = src[pos++];
+            }
+            buf[j] = '\0';
+            pos++; // skip closing quote
+            tokens[i++] = (Token){TOKEN_STRING, strdup(buf)};
+            continue;
+        }
+
+
 
         switch (src[pos]) {
             case '+': tokens[i++] = (Token){TOKEN_PLUS, strdup("+")}; break;
@@ -30,7 +50,7 @@ Token *tokenize(const char *src, int *count) {
             case ')': tokens[i++] = (Token){TOKEN_RPAREN, strdup(")")}; break;
             case ';': tokens[i++] = (Token){TOKEN_SEMICOLON, strdup(";")}; break;
             default:
-                printf("Unknown character: %c\n", src[pos]);
+                printf("Kimeumana: Unknown character: %c\n", src[pos]);
                 exit(1);
         }
         pos++;

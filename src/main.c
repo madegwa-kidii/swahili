@@ -38,6 +38,6 @@ int main(int argc, char **argv) {
 	// system("gcc build/out.o -o build/out.exe");
 
 
-    printf("Kimeundwa: ./build/out\n");
+    printf("Code ime build sasa: ./build/out\n");
     return 0;
 }
