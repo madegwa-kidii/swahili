@@ -21,10 +21,37 @@ void generate_asm(Node *root, const char *outfile) {
 
     if (root->type == NODE_PRINT) {
         int value = eval(root->left);
+
+
+		/*  on linux
+
         fprintf(f, "    mov rdi, fmt\n");
         fprintf(f, "    mov rsi, %d\n", value);
         fprintf(f, "    xor rax, rax\n");
         fprintf(f, "    call printf\n");
+
+			on windows
+
+		fprintf(f, "    mov rcx, fmt\n");
+		fprintf(f, "    mov rdx, %d\n", value);
+		fprintf(f, "    call printf\n");
+
+		*/
+
+
+
+		#ifdef _WIN32
+            fprintf(f, "    mov rcx, fmt\n");
+    		fprintf(f, "    mov rdx, %d\n", value);
+    		fprintf(f, "    call printf\n");
+		#else
+    		fprintf(f, "    mov rdi, fmt\n");
+    		fprintf(f, "    mov rsi, %d\n", value);
+    		fprintf(f, "    xor rax, rax\n");
+    		fprintf(f, "    call printf\n");
+		#endif
+
+
     }
 
     fprintf(f, "    ret\n");

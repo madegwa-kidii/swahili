@@ -27,9 +27,16 @@ int main(int argc, char **argv) {
 
     generate_asm(ast, "build/out.s");
 
-    system("nasm -felf64 build/out.s -o build/out.o");
-    system("ld build/out.o -o build/out");
+	// on linux
 
-    printf("✅ Kimeundwa: ./build/out\n");
+    // system("nasm -felf64 build/out.s -o build/out.o");
+    // system("ld build/out.o -o build/out");
+
+	// on windows
+	system("nasm -f win64 build/out.s -o build/out.o");
+	system("gcc build/out.o -o build/out.exe");
+
+
+    printf("Kimeundwa: ./build/out\n");
     return 0;
 }
