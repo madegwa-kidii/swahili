@@ -1,128 +1,137 @@
-﻿# swahili
+# Swahili Compiler (Educational)
 
-###Motivation
-Provide a small, educational compiler that clearly demonstrates the six classical compiler phases for a tiny Swahili-flavored language.
-Make each phase modular and separable so students can inspect and run each stage independently.
-Support simple Swahili keywords and constructs (declarations, arithmetic, kama/sio if/else, wakati while, andika print) to make examples culturally relevant and easy to follow.
-###Description
-Added a full pipeline split into modules: lexer/ (tokenizer), parser/ (AST + recursive-descent parser), semantic/ (symbol table + semantic checks), ir/ (three-address code generation), optimizer/ (constant folding + simple dead-code elimination), codegen/ (pseudo-assembly emitter), plus compiler/main.c, utils.h, and examples/sample_compiler_demo.swa as the driver and sample program.
-The lexer supports Swahili keywords (namba, maneno, andika, kama, sio, wakati, ni), numbers, strings, operators and punctuation and emits a TokenStream with line information and printing/free helpers.
-The parser builds an AST (parser/ast.h) with precedence-aware expressions and constructs for var-decl, assign, print, if/else, and while, and includes an AST pretty-printer and cleanup routines.
-Semantic analysis implements a scoped symbol table (semantic/symbol_table.*) and performs declaration checks, undeclared use detection, type checking between namba and maneno, and condition validation; IR generation emits TAC with temps/labels; optimizer performs constant folding and basic unreachable-code removal; codegen prints readable pseudo-assembly (MOV, ADD, SUB, MUL, DIV, CMP, JE, JMP, PRINT).
-###Testing
-Successfully compiled the full toolchain with gcc -std=c99 -Wall -Wextra -pedantic compiler/main.c lexer/lexer.c parser/parser.c semantic/semantic.c semantic/symbol_table.c ir/ir.c optimizer/optimizer.c codegen/codegen.c -o swahili_compiler.
-Ran the end-to-end sample with ./swahili_compiler examples/sample_compiler_demo.swa and observed printed results for tokens, AST, Semantic check: PASS, generated TAC, optimized TAC, and final pseudo-assembly, all produced as expected.
-No automated test failures were observed during compilation and the sample run.
-## sintaxi
+A small, modular compiler written in C that demonstrates the **classical compiler pipeline** using a tiny Swahili-flavored language.
 
-```aiignore
- 
-  akuna - void 
-  namba - int	Integer 
-  maneno - string
-  kazi - function / method	
-  rudisha - return
-  unda - class/interface/type
-  ni  - =
-  kama/ikiwa - if 
-  
-  chukua - input
-  andika - print
-  wakati - while
-  toka - break
-  
-  rudi/rudisha return 
-  
-   
-    
-    # kama 5 ni namba {
-  
-                    } kamasio {
-                    
-                    sio {
-                    
-                    }
-                    
-                    
-  
-  # Data types
-  kamba - string 
-  namba - number/int
-  
-  
-  
-  
-  
- 
+This project is meant for learning: each compiler phase is separated into its own module so you can study and run each stage end-to-end.
+
+## Why this project exists
+
+- Teach compiler fundamentals with a compact codebase.
+- Keep each phase independent and readable.
+- Use Swahili-inspired keywords (`namba`, `maneno`, `kama`, `sio`, `wakati`, `andika`) so syntax examples feel approachable and distinctive.
+
+## Implemented pipeline
+
+The compiler currently runs the following phases:
+
+1. **Lexical analysis** (`lexer/`)  
+   Converts source text into a stream of tokens.
+2. **Parsing / syntax analysis** (`parser/`)  
+   Builds an Abstract Syntax Tree (AST) with expression precedence.
+3. **Semantic analysis** (`semantic/`)  
+   Tracks declarations/types and reports semantic errors.
+4. **Intermediate Representation (IR) generation** (`ir/`)  
+   Produces simple three-address-code (TAC)-style instructions.
+5. **Optimization** (`optimizer/`)  
+   Applies basic optimization passes.
+6. **Code generation** (`codegen/`)  
+   Emits readable pseudo-assembly.
+
+Driver entrypoint: `compiler/main.c`.
+
+## Repository structure
+
+```text
+compiler/   # pipeline driver (main)
+lexer/      # tokenizer + token stream helpers
+parser/     # AST definitions + recursive-descent parser
+semantic/   # symbol table + semantic checks
+ir/         # TAC-style intermediate code generation
+optimizer/  # basic IR optimization
+codegen/    # pseudo-assembly emitter
+examples/   # sample .swa programs
 ```
 
-```
-    unda Kitabu {
-    
-        namba pages;
-        kamba jina;
-        
-    
-    }
-    
-    Kitabu tumbo_lisilo_shiba = mpya Kitabu();
-    
-    Book mybook = new Book();
-    
+> Note: There is also an older `src/` tree in this repository. The command below builds the modular pipeline used by `compiler/main.c`.
 
-```
+## Language overview (current grammar/features)
 
+### Data types
 
-```aiignore
+- `namba` → integer
+- `maneno` → string
 
-    try {
-    
-    } catch {
-    
-    } finally {
-    
-    }
-    
-    
-    jaribu {
-    
-    } shika/ rusha era {
-    
-    } badae {
-    
-    }
-    
-    
-```
+### Statements
 
-# 🧱 4. Compiler Architecture
+- Variable declaration (optional initialization)
+  - `namba x;`
+  - `namba x = 10;`
+  - `namba x ni 10;` (also accepted)
+- Assignment
+  - `x = x + 1;`
+- Print
+  - `andika(x);`
+- Conditional
+  - `kama (x > 0) { ... } sio { ... }`
+- Loop
+  - `wakati (x > 0) { ... }`
 
-```aiignore
+### Expressions
 
-program.swa
-   ↓
-[Lexer] → [Parser] → [AST] → [Semantic Analyzer]
-   ↓
-[Code Generator → Assembly]
-   ↓
-nasm/ld
-   ↓
-Native executable
+- Literals: numbers and strings
+- Identifiers
+- Arithmetic: `+ - * /`
+- Comparisons: `< > <= >= == !=`
+- Parentheses for grouping
 
+## Example program
+
+See `examples/sample_compiler_demo.swa`:
+
+```swa
+namba x ni 5;
+namba y ni 3;
+namba z = x + y * 2;
+
+kama (z > 10) {
+  andika(z);
+} sio {
+  andika(0);
+}
+
+wakati (x > 0) {
+  andika(x);
+  x = x - 1;
+}
 ```
 
-```aiignore
+## Build
 
- nasm -v
+From repository root:
+
+```bash
+gcc -std=c99 -Wall -Wextra -pedantic \
+  compiler/main.c \
+  lexer/lexer.c \
+  parser/parser.c \
+  semantic/semantic.c semantic/symbol_table.c \
+  ir/ir.c \
+  optimizer/optimizer.c \
+  codegen/codegen.c \
+  -o swahili_compiler
 ```
 
-## Build and run 
+## Run
 
-```aiignore
-
- gcc src/*.c -o swahilic
- .\swahilic.exe examples\niaje.swa
- gcc build/out.o -o build/out.exe
- .\build\out.exe
-
+```bash
+./swahili_compiler examples/sample_compiler_demo.swa
 ```
+
+The compiler prints each stage output (tokens, AST, semantic status, IR, optimized IR, pseudo-assembly).
+
+## Current status and limitations
+
+- Designed as an educational prototype, not a production compiler.
+- Emits pseudo-assembly, not machine code.
+- The implemented syntax is intentionally small.
+- Error handling is present but still minimal in some paths.
+
+## Contributing ideas
+
+Potential next improvements:
+
+- richer type system and operations
+- functions/procedures
+- better diagnostics and recovery
+- more optimization passes
+- backend that emits real target code
