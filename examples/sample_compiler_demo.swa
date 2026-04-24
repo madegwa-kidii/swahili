@@ -1,0 +1,15 @@
+# Programu ya mfano ya Swahili language
+namba x ni 5;
+namba y ni 3;
+namba z = x + y * 2;
+
+kama (z > 10) {
+  andika(z);
+} sio {
+  andika(0);
+}
+
+wakati (x > 0) {
+  andika(x);
+  x = x - 1;
+}
